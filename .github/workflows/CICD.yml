@@ -12,6 +12,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./refactoring_project/Bobi/
     steps:
       - uses: actions/checkout@v3
       - name: Install JDK 17
@@ -22,7 +25,6 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          cd ./refactoring_project/Bobi/
           chmod +x gradlew
           ./gradlew clean build -x test
 
