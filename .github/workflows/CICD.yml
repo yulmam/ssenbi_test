@@ -25,8 +25,18 @@ jobs:
 
       - name: Create .env file from GitHub Secrets
         run: echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
-        working-directory: ./refactoring_project/Bobi/
-
+        
+      - name: Verify .env file existence
+        run: |
+          if [ -f .env ]; then
+            echo ".env 파일이 생성되었습니다."
+          else
+            echo ".env 파일이 없습니다."
+            exit 1
+          fi
+      - name: Find .env File
+        run: find . -name ".env"
+        
       - name: Build with Gradle
         run: |
           chmod +x gradlew
