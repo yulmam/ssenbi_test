@@ -36,6 +36,7 @@ public class JwtFilter implements Filter {
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.redisUtil = redisUtil;
 		// 제외하고 싶은 URL과 메소드 조합을 추가
+		excludedPaths.add(new RequestMatcher("/env", HttpMethod.GET));
 		excludedPaths.add(new RequestMatcher("/member", HttpMethod.POST));
 		excludedPaths.add(new RequestMatcher("/auth/login", HttpMethod.POST));
 		excludedPaths.add(new RequestMatcher("/auth/refresh", HttpMethod.POST));
