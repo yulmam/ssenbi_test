@@ -22,12 +22,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-
-      - name: Create .env file from GitHub Secrets
-        run: echo "${{ secrets.ENV_FILE_CONTENT }}" >> .env
-    
+   
       - name: Build with Gradle
         run: |
+          echo ${{secrets.APPLICATION_SECRET}} | base64 --decode > ./src/main/resources/application-secret.yaml
           chmod +x gradlew
           ./gradlew clean build --info -x test
 
