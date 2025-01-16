@@ -41,6 +41,7 @@ jobs:
 
       - name: Build Docker
         run: docker build --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/infra_server .
+        working-directory: ./refactoring_project/Bobi/
       - name: Push Docker
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/infra_server:latest
         
