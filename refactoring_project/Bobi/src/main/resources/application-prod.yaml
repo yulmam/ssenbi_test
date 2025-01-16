@@ -20,7 +20,6 @@ spring:
       host: ${redis.host}
       port: ${redis.port}
 
-
 coolsms:
   senderPhoneNumber: ${COOLSMS_SENDER}
   api:
