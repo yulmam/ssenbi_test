@@ -36,7 +36,8 @@ jobs:
           fi
       - name: Find .env File
         run: find . -name ".env"
-        
+      - name: Print Current Working Directory
+        run: pwd   
       - name: Build with Gradle
         run: |
           chmod +x gradlew
