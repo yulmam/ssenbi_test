@@ -91,7 +91,7 @@ jobs:
       - name: Change nginx upstream
         uses: appleboy/ssh-action@master
         with:
-          username: ubuntu
+          username: ec2-user
           host: ${{ secrets.INFRA_SERVER_IP }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
@@ -101,7 +101,7 @@ jobs:
       - name: Stop current server
         uses: appleboy/ssh-action@master
         with:
-          username: ubuntu
+          username: ec2-user
           host: ${{ secrets.INFRA_SERVER_IP }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
