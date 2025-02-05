@@ -58,6 +58,11 @@ dependencies {
 
     // coolsms
     implementation 'net.nurigo:sdk:4.3.0'
+
+    //cache
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: '3.4.1'
+    implementation group: 'org.ehcache', name: 'ehcache', version: '3.10.8'
+
 }
 
 tasks.named('test') {

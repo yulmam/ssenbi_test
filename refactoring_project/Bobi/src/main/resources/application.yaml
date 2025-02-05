@@ -11,6 +11,10 @@ spring:
       blue: blue, common, secret
       green: green, common, secret
 
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+
   config:
     import: optional:file:.env[.properties]
 

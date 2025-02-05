@@ -49,6 +49,8 @@ public class GeneralServiceImpl implements GeneralService {
 			.collect(Collectors.toList());
 	}
 
+
+	@Cacheabl
 	@Override
 	public List<GeneralTemplateResponse> getTemplatesByCategoryId(long categoryId,
 		Pageable pageable) {
