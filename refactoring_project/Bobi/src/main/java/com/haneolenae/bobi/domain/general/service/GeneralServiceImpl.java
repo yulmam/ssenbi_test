@@ -3,6 +3,7 @@ package com.haneolenae.bobi.domain.general.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,7 @@ public class GeneralServiceImpl implements GeneralService {
 	}
 
 
-	@Cacheabl
+	@Cacheable
 	@Override
 	public List<GeneralTemplateResponse> getTemplatesByCategoryId(long categoryId,
 		Pageable pageable) {
