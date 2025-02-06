@@ -10,7 +10,6 @@ spring:
       local: local, common, secret
       blue: blue, common, secret
       green: green, common, secret
-
   cache:
     jcache:
       config: classpath:ehcache.xml
