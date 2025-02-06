@@ -51,7 +51,6 @@ public class GeneralServiceImpl implements GeneralService {
 	}
 
 
-	@Cacheable
 	@Override
 	public List<GeneralTemplateResponse> getTemplatesByCategoryId(long categoryId,
 		Pageable pageable) {
