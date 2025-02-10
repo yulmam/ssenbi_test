@@ -52,6 +52,7 @@ public class GeneralServiceImpl implements GeneralService {
 
 
 	@Override
+	@Cacheable(value = "categoryCache", key = "#categoryId")
 	public List<GeneralTemplateResponse> getTemplatesByCategoryId(long categoryId,
 		Pageable pageable) {
 		return generalTemplateRepository.findByCategoryId(categoryId, pageable)
@@ -69,7 +70,9 @@ public class GeneralServiceImpl implements GeneralService {
 		);
 	}
 
+
 	@Override
+	@Cacheable(value = "templatesCache")
 	public List<CategoryTemplatesResponse> getTemplatesGroupByCategory() {
 		return categoryRepository.findAllWithTemplates()
 			.stream()
