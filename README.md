@@ -7,7 +7,7 @@ https://acoustic-rib-4c4.notion.site/1-CICD-17e708433a6d80369823cec996496dee?pvs
 
 ## 2.성능 향상시키기
 
-### ehcache를 통한 성능 향상
+### 2.1 ehcache를 통한 성능 향상
 https://acoustic-rib-4c4.notion.site/ehcache-180708433a6d807db8dec6d4458da1ec?pvs=4
 
-### 비동기를 통한 성능 향상(작성 중)
+### 2.2 비동기를 통한 성능 향상(작성 중)
