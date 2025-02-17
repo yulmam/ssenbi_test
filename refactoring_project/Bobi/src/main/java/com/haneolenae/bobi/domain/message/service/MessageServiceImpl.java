@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -106,28 +110,13 @@ public class MessageServiceImpl implements MessageService {
 		// 실패한 고객 이름 리스트
 		List<String> failedCustomers = new ArrayList<>();
 
-		for (Customer customer : finalReceiverCustomers) {
+		Executor executor = Executors.newFixedThreadPool(10);
 
-			log.info("고객에게 메시지 전송 : " + customer.getId());
+		List<CompletableFuture<Void>> futures = finalReceiverCustomers.stream()
+				.map(customer -> sendMessageAsync(originMessage, sender, customer, successCustomers, failedCustomers, executor))
+				.collect(Collectors.toList());
 
-			// TODO: 고객에 맞는 메시지 생성
-			String msg = generateMessageForCustomer(originMessage.getContent(), sender, customer);
-
-			try {
-				// TODO: 메시지 전송 외부 API 호출
-				sendCoolSms(customer.getPhoneNumber(), msg);
-
-				successCustomers.add(MessageCustomer.builder()
-					.name(customer.getName())
-					.phoneNumber(customer.getPhoneNumber())
-					.color(customer.getColor())
-					.message(originMessage)
-					.build());
-
-			} catch (ApiException e) {
-				failedCustomers.add(customer.getName());
-			}
-		}
+		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
 		if (failedCustomers.size() == finalReceiverCustomers.size()) {
 			throw new ApiException(ApiType.MESSAGE_SERVICE_ALL_FAIL);
@@ -159,6 +148,31 @@ public class MessageServiceImpl implements MessageService {
 			throw new ApiException(ApiType.EXTERNAL_MESSAGE_SERVICE_ERROR, failedCustomers);
 		}
 	}
+	private CompletableFuture<Void> sendMessageAsync(Message originMessage, Member sender, Customer customer,
+													 List<MessageCustomer> successCustomers, List<String> failedCustomers,
+													 Executor executor) {
+		return CompletableFuture.runAsync(() -> {
+			log.info("고객에게 메시지 전송 : " + customer.getId());
+			String msg = generateMessageForCustomer(originMessage.getContent(), sender, customer);
+			try {
+				sendCoolSms(customer.getPhoneNumber(), msg);
+				synchronized (successCustomers) {
+					successCustomers.add(MessageCustomer.builder()
+							.name(customer.getName())
+							.phoneNumber(customer.getPhoneNumber())
+							.color(customer.getColor())
+							.message(originMessage)
+							.build());
+				}
+			} catch (ApiException e) {
+				synchronized (failedCustomers) {
+					failedCustomers.add(customer.getName());
+				}
+			}
+		}, executor);
+	}
+
+
 
 	public String generateMessageForCustomer(String content, Member sender, Customer customer) {
 		String message = content.replace(BUSINESS_NAME_PLACEHOLDER, sender.getBusiness());
