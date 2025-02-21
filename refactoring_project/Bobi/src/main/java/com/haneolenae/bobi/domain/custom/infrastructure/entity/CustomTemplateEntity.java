@@ -3,6 +3,7 @@ package com.haneolenae.bobi.domain.custom.infrastructure.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.haneolenae.bobi.domain.custom.domain.CustomTemplate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -29,16 +30,16 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NamedEntityGraph(
-	name = "CustomTemplate.withTagsAndCustomers",
+	name = "CustomTemplateEntity.withTagsAndCustomers",
 	attributeNodes = {
-		@NamedAttributeNode("templateTags"),
-		@NamedAttributeNode("templateCustomers")
+		@NamedAttributeNode("templateTagEntities"),
+		@NamedAttributeNode("templateCustomerEntities")
 	}
 )
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomTemplate {
+public class CustomTemplateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -63,23 +64,23 @@ public class CustomTemplate {
 	private LocalDateTime updatedAt;
 
 	@OneToMany(mappedBy = "customTemplate", fetch = FetchType.LAZY)
-	private List<TemplateCustomer> templateCustomers;
+	private List<TemplateCustomerEntity> templateCustomerEntities;
 
 	@OneToMany(mappedBy = "customTemplate", fetch = FetchType.LAZY)
-	private List<TemplateTag> templateTags;
+	private List<TemplateTagEntity> templateTagEntities;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	public CustomTemplate(String title, String content, Integer count) {
+	public CustomTemplateEntity(String title, String content, Integer count) {
 		this.title = title;
 		this.content = content;
 		this.count = count;
 	}
 
 	@Builder
-	public CustomTemplate(String title, String content, Integer count, Member member) {
+	public CustomTemplateEntity(String title, String content, Integer count, Member member) {
 		this.title = title;
 		this.content = content;
 		this.count = count;
@@ -91,13 +92,13 @@ public class CustomTemplate {
 		this.content = request.getTemplateContent();
 	}
 
-	public CustomTemplate(String title, String content) {
+	public CustomTemplateEntity(String title, String content) {
 		this.title = title;
 		this.content = content;
 	}
 
-	public CustomTemplate replicateMe() {
-		return CustomTemplate.builder()
+	public CustomTemplateEntity replicateMe() {
+		return CustomTemplateEntity.builder()
 			.title(this.title)
 			.content(this.content)
 			.member(this.member)
@@ -107,5 +108,19 @@ public class CustomTemplate {
 
 	public void countUp() {
 		count++;
+	}
+
+	public CustomTemplate to(){
+		return CustomTemplate.builder()
+				.id(id)
+				.title(title)
+				.content(content)
+				.count(count)
+				.createdAt(createdAt)
+				.updatedAt(updatedAt)
+				.templateCustomer(templateCustomerEntities.to())
+				.templateTagEntities(templateTagEntities.to())
+				.member()
+				.build();
 	}
 }

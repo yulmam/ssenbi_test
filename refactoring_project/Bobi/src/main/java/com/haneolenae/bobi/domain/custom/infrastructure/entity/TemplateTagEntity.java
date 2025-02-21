@@ -1,6 +1,6 @@
 package com.haneolenae.bobi.domain.custom.infrastructure.entity;
 
-import com.haneolenae.bobi.domain.customer.entity.Customer;
+import com.haneolenae.bobi.domain.tag.entity.Tag;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,24 +11,24 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
+@Getter
 @NoArgsConstructor
-public class TemplateCustomer {
+public class TemplateTagEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne
 	@JoinColumn(name = "custom_template_id")
-	private CustomTemplate customTemplate;
+	private CustomTemplateEntity customTemplateEntity;
 
 	@ManyToOne
-	@JoinColumn(name = "customer_id")
-	private Customer customer;
+	@JoinColumn(name = "tag_id")
+	private Tag tag;
 
-	public TemplateCustomer(CustomTemplate customTemplate, Customer customer) {
-		this.customTemplate = customTemplate;
-		this.customer = customer;
+	public TemplateTagEntity(CustomTemplateEntity customTemplateEntity, Tag tag) {
+		this.customTemplateEntity = customTemplateEntity;
+		this.tag = tag;
 	}
 }

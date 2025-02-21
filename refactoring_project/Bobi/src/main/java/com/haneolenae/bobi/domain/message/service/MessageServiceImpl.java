@@ -20,7 +20,7 @@ import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 
-import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplate;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplateEntity;
 import com.haneolenae.bobi.domain.custom.service.port.CustomTemplateRepository;
 import com.haneolenae.bobi.domain.customer.entity.Customer;
 import com.haneolenae.bobi.domain.customer.repository.CustomerRepository;
@@ -128,10 +128,10 @@ public class MessageServiceImpl implements MessageService {
 		sender.increaseMessageCount();
 
 		if (sendMessageRequest.getCustomTemplateId() != null) {
-			CustomTemplate customTemplate = customTemplateRepository.findById(sendMessageRequest.getCustomTemplateId())
+			CustomTemplateEntity customTemplateEntity = customTemplateRepository.findById(sendMessageRequest.getCustomTemplateId())
 				.orElse(null);
-			if (customTemplate != null) {
-				customTemplate.countUp();
+			if (customTemplateEntity != null) {
+				customTemplateEntity.countUp();
 			}
 		}
 

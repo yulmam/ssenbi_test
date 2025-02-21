@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.haneolenae.bobi.domain.custom.controller.port.CustomTemplateService;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplateEntity;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateCustomerEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,9 +18,7 @@ import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddTagToTem
 import com.haneolenae.bobi.domain.custom.controller.port.dto.request.EditCustomTemplateRequest;
 import com.haneolenae.bobi.domain.custom.controller.port.dto.request.ReplicateCustomTemplateRequest;
 import com.haneolenae.bobi.domain.custom.controller.port.dto.response.CustomTemplateResponse;
-import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplate;
-import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateCustomer;
-import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateTag;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateTagEntity;
 import com.haneolenae.bobi.domain.custom.mapper.CustomTemplateMapper;
 import com.haneolenae.bobi.domain.custom.service.port.CustomTemplateRepository;
 import com.haneolenae.bobi.domain.custom.service.port.TemplateCustomerRepository;
@@ -60,38 +60,38 @@ public class CustomTemplateServiceImpl implements CustomTemplateService {
 	@Override
 	public List<CustomTemplateResponse> getCustomTemplates(long memberId, Pageable pageable, List<Long> templateTags,
 		List<Long> templateCustomer, String templateSearch) {
-		List<CustomTemplate> customTemplates = customTemplateRepository.findTemplates(pageable, templateTags,
+		List<CustomTemplateEntity> customTemplateEntities = customTemplateRepository.findTemplates(pageable, templateTags,
 			templateCustomer, templateSearch, memberId).getContent();
 
-		return customTemplates.stream().map(customTemplateMapper::toCustomTemplateResponse)
+		return customTemplateEntities.stream().map(customTemplateMapper::toCustomTemplateResponse)
 			.toList();
 	}
 
 	@Override
 	public CustomTemplateResponse getCustomTemplate(long memberId, long templateId) {
-		CustomTemplate customTemplate = customTemplateRepository.findByIdAndMemberId(templateId, memberId)
+		CustomTemplateEntity customTemplateEntity = customTemplateRepository.findByIdAndMemberId(templateId, memberId)
 			.orElseThrow(() -> new ApiException(ApiType.CUSTOM_TEMPLATE_NOT_EXIST));
 
-		return customTemplateMapper.toCustomTemplateResponse(customTemplate);
+		return customTemplateMapper.toCustomTemplateResponse(customTemplateEntity);
 	}
 
 	@Transactional
 	public void addCustomTemplate(long memberId, AddCustomTemplateRequest request) {
-		CustomTemplate customTemplate = customTemplateMapper.toCustomTemplate(request,
+		CustomTemplateEntity customTemplateEntity = customTemplateMapper.toCustomTemplate(request,
 			memberRepository.getReferenceById(memberId)
 		);
 
 		//이제 id 사용 가능
-		customTemplateRepository.save(customTemplate);
+		customTemplateRepository.save(customTemplateEntity);
 
 		//연관관계 맵핑
-		addTags(memberId, request.getTemplateTagIds(), customTemplate);
+		addTags(memberId, request.getTemplateTagIds(), customTemplateEntity);
 
 		//연관관계 맵핑
-		addCustomers(memberId, request.getTemplateCustomerIds(), customTemplate);
+		addCustomers(memberId, request.getTemplateCustomerIds(), customTemplateEntity);
 	}
 
-	public void addTags(long memberId, List<Long> tagIds, CustomTemplate customTemplate) {
+	public void addTags(long memberId, List<Long> tagIds, CustomTemplateEntity customTemplateEntity) {
 		if (!tagIds.isEmpty()) {
 			List<Tag> tags = tagRepository.findByMemberIdAndIdIn(memberId, tagIds);
 
@@ -99,12 +99,12 @@ public class CustomTemplateServiceImpl implements CustomTemplateService {
 				throw new ApiException(ApiType.TAG_NOT_FOUND);
 
 			tags.forEach(tag -> templateTagRepository.save(
-				new TemplateTag(customTemplate, tag)
+				new TemplateTagEntity(customTemplateEntity, tag)
 			));
 		}
 	}
 
-	public void addCustomers(long memberId, List<Long> customerIds, CustomTemplate customTemplate) {
+	public void addCustomers(long memberId, List<Long> customerIds, CustomTemplateEntity customTemplateEntity) {
 		if (!customerIds.isEmpty()) {
 			List<Customer> customers = customerRepository.findByMemberIdAndIdIn(memberId, customerIds);
 
@@ -112,18 +112,18 @@ public class CustomTemplateServiceImpl implements CustomTemplateService {
 				throw new ApiException(ApiType.CUSTOMER_NOT_FOUND);
 
 			customers.forEach(customer -> templateCustomerRepository.save(
-				new TemplateCustomer(customTemplate, customer)
+				new TemplateCustomerEntity(customTemplateEntity, customer)
 			));
 		}
 	}
 
 	@Transactional
 	public void editCustomTemplate(long memberId, long templateId, EditCustomTemplateRequest request) {
-		CustomTemplate customTemplate = customTemplateRepository.findByIdAndMemberId(templateId, memberId)
+		CustomTemplateEntity customTemplateEntity = customTemplateRepository.findByIdAndMemberId(templateId, memberId)
 			.orElseThrow(() -> new ApiException(ApiType.CUSTOM_TEMPLATE_NOT_EXIST));
 
 		//제목과 내용 수정
-		customTemplate.editTitleAndContent(request);
+		customTemplateEntity.editTitleAndContent(request);
 
 		//태그 수정
 		editTags(memberId, request, templateId);
@@ -156,7 +156,7 @@ public class CustomTemplateServiceImpl implements CustomTemplateService {
 		//저장
 		afterTagSet.stream().filter(val -> !gongtongTagIdSet.contains(val))
 			.forEach((val) ->
-				templateTagRepository.save(new TemplateTag(
+				templateTagRepository.save(new TemplateTagEntity(
 					customTemplateRepository.getReferenceById(templateId), tagRepository.getReferenceById(val)
 				))
 			);
@@ -184,7 +184,7 @@ public class CustomTemplateServiceImpl implements CustomTemplateService {
 
 		afterCustomerSet.stream().filter(val -> !gongtongCustomerIdSet.contains(val))
 			.forEach((val) ->
-				templateCustomerRepository.save(new TemplateCustomer(
+				templateCustomerRepository.save(new TemplateCustomerEntity(
 					customTemplateRepository.getReferenceById(templateId),
 					customerRepository.getReferenceById(val)
 				))
@@ -193,22 +193,22 @@ public class CustomTemplateServiceImpl implements CustomTemplateService {
 
 	@Transactional
 	public void deleteCustomTemplate(long memberId, long templateId) {
-		CustomTemplate customTemplate = customTemplateRepository.findByIdAndMemberId(templateId, memberId)
+		CustomTemplateEntity customTemplateEntity = customTemplateRepository.findByIdAndMemberId(templateId, memberId)
 			.orElseThrow(() -> new ApiException(ApiType.CUSTOM_TEMPLATE_NOT_EXIST));
 
 		//연관관계 해제
 		templateTagRepository.deleteByCustomTemplateId(templateId);
 
 		//연관관계 해제
-		templateCustomerRepository.deleteByCustomTemplateId(customTemplate.getId());
+		templateCustomerRepository.deleteByCustomTemplateId(customTemplateEntity.getId());
 
-		customTemplateRepository.delete(customTemplate);
+		customTemplateRepository.delete(customTemplateEntity);
 	}
 
 	@Transactional
 	public void addTagToTemplate(long memberId, long templateId, AddTagToTemplateRequest request) {
 		templateTagRepository.save(
-			new TemplateTag(
+			new TemplateTagEntity(
 				customTemplateRepository.getReferenceById(templateId),
 				tagRepository.getReferenceById(request.getTagId())
 			)
@@ -218,7 +218,7 @@ public class CustomTemplateServiceImpl implements CustomTemplateService {
 	@Transactional
 	public void addCustomerToTemplate(long memberId, long templateId, AddCustomerToTemplateRequest request) {
 		templateCustomerRepository.save(
-			new TemplateCustomer(
+			new TemplateCustomerEntity(
 				customTemplateRepository.getReferenceById(templateId),
 				customerRepository.getReferenceById(request.getCustomerId())
 			)
@@ -237,27 +237,27 @@ public class CustomTemplateServiceImpl implements CustomTemplateService {
 
 	@Override
 	public void replicateCustomTemplate(long memberId, long templateId, ReplicateCustomTemplateRequest request) {
-		CustomTemplate customTemplate = customTemplateRepository.findByIdAndMemberId(templateId, memberId)
+		CustomTemplateEntity customTemplateEntity = customTemplateRepository.findByIdAndMemberId(templateId, memberId)
 			.orElseThrow(() -> new ApiException(ApiType.CUSTOM_TEMPLATE_NOT_EXIST));
 
-		CustomTemplate replicatedCustomTemplate = customTemplate.replicateMe();
-		customTemplateRepository.save(replicatedCustomTemplate);
+		CustomTemplateEntity replicatedCustomTemplateEntity = customTemplateEntity.replicateMe();
+		customTemplateRepository.save(replicatedCustomTemplateEntity);
 
 		// 태그와 고객 복사
 		if (request.getIsReplicateTagAndCustomer()) {
-			customTemplate.getTemplateTags().forEach(templateTag ->
+			customTemplateEntity.getTemplateTagEntities().forEach(templateTag ->
 				templateTagRepository.save(
-					new TemplateTag(
-						replicatedCustomTemplate,
+					new TemplateTagEntity(
+							replicatedCustomTemplateEntity,
 						templateTag.getTag()
 					)
 				)
 			);
 
-			customTemplate.getTemplateCustomers().forEach(templateCustomer ->
+			customTemplateEntity.getTemplateCustomerEntities().forEach(templateCustomer ->
 				templateCustomerRepository.save(
-					new TemplateCustomer(
-						replicatedCustomTemplate,
+					new TemplateCustomerEntity(
+							replicatedCustomTemplateEntity,
 						templateCustomer.getCustomer()
 					)
 				)

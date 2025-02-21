@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplateEntity;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplate;
 import com.haneolenae.bobi.domain.customer.entity.Customer;
 import com.haneolenae.bobi.domain.member.dto.request.MemberUpdateRequest;
 import com.haneolenae.bobi.domain.message.entity.Message;
@@ -84,7 +84,7 @@ public class Member {
 	private List<Customer> customers = new ArrayList<>();
 
 	@OneToMany(mappedBy = "member")
-	private List<CustomTemplate> customTemplates = new ArrayList<>();
+	private List<CustomTemplateEntity> customTemplateEntities = new ArrayList<>();
 
 	@Builder
 	public Member(String memberId, String password, String name, String business, String personalPhoneNumber,

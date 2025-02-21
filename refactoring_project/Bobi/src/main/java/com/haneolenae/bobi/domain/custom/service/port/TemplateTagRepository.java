@@ -3,18 +3,17 @@ package com.haneolenae.bobi.domain.custom.service.port;
 import java.util.List;
 import java.util.Set;
 
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateTagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateTag;
-
-public interface TemplateTagRepository extends JpaRepository<TemplateTag, Long> {
-	List<TemplateTag> findByTagIdIn(List<Long> tagIds);
+public interface TemplateTagRepository extends JpaRepository<TemplateTagEntity, Long> {
+	List<TemplateTagEntity> findByTagIdIn(List<Long> tagIds);
 
 	//memberId 추가 해야한다.
 	@Modifying
-	@Query("DELETE FROM TemplateTag t WHERE t.customTemplate.id = :customTemplateId")
+	@Query("DELETE FROM TemplateTagEntity t WHERE t.customTemplate.id = :customTemplateId")
 	void deleteByCustomTemplateId(Long customTemplateId);
 
 	@Query
@@ -22,6 +21,6 @@ public interface TemplateTagRepository extends JpaRepository<TemplateTag, Long> 
 
 	void deleteByTagIdAndCustomTemplateId(Long tagId, Long customTemplateId);
 
-	@Query("SELECT t.tag.id FROM TemplateTag t WHERE t.customTemplate.id = :templateId")
+	@Query("SELECT t.tag.id FROM TemplateTagEntity t WHERE t.customTemplate.id = :templateId")
 	Set<Long> getTagIdsByTemplateId(long templateId);
 }

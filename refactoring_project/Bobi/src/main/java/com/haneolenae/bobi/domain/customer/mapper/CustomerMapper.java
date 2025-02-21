@@ -51,7 +51,7 @@ public interface CustomerMapper {
 			.color(request.getCustomerColor())
 			.tagCount(request.getCustomerTags().size())
 			.member(member)
-			.templateCustomers(new ArrayList<>())
+			.templateCustomerEntities(new ArrayList<>())
 			.customerTags(new ArrayList<>())
 			.build();
 	}
