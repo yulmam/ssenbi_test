@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.haneolenae.bobi.domain.custom.entity.TemplateCustomer;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateCustomer;
 import com.haneolenae.bobi.domain.customer.dto.request.UpdateCustomerRequest;
 import com.haneolenae.bobi.domain.member.entity.Member;
 import com.haneolenae.bobi.domain.tag.entity.Tag;

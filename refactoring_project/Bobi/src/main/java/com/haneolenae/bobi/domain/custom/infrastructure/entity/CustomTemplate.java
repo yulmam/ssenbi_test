@@ -1,4 +1,4 @@
-package com.haneolenae.bobi.domain.custom.entity;
+package com.haneolenae.bobi.domain.custom.infrastructure.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.haneolenae.bobi.domain.custom.dto.request.EditCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.EditCustomTemplateRequest;
 import com.haneolenae.bobi.domain.member.entity.Member;
 
 import jakarta.persistence.Column;

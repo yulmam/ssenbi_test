@@ -1,15 +1,15 @@
-package com.haneolenae.bobi.domain.custom.service;
+package com.haneolenae.bobi.domain.custom.controller.port;
 
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 
-import com.haneolenae.bobi.domain.custom.dto.request.AddCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.dto.request.AddCustomerToTemplateRequest;
-import com.haneolenae.bobi.domain.custom.dto.request.AddTagToTemplateRequest;
-import com.haneolenae.bobi.domain.custom.dto.request.EditCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.dto.request.ReplicateCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.dto.response.CustomTemplateResponse;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddCustomerToTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddTagToTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.EditCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.ReplicateCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.response.CustomTemplateResponse;
 
 public interface CustomTemplateService {
 	List<CustomTemplateResponse> getCustomTemplates(long memberId, Pageable pageable, List<Long> templateTags,

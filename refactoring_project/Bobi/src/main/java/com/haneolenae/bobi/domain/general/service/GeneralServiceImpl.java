@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.haneolenae.bobi.domain.custom.mapper.CustomTemplateMapper;
-import com.haneolenae.bobi.domain.custom.repository.CustomTemplateRepository;
+import com.haneolenae.bobi.domain.custom.service.port.CustomTemplateRepository;
 import com.haneolenae.bobi.domain.general.dto.request.DuplicateGeneralTemplateRequest;
 import com.haneolenae.bobi.domain.general.dto.response.CategoryResponse;
 import com.haneolenae.bobi.domain.general.dto.response.CategoryTemplatesResponse;

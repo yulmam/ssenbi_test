@@ -1,4 +1,4 @@
-package com.haneolenae.bobi.domain.custom.repository;
+package com.haneolenae.bobi.domain.custom.service.port;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.haneolenae.bobi.domain.custom.entity.CustomTemplate;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplate;
 
 @Repository
 public interface CustomTemplateRepository extends JpaRepository<CustomTemplate, Long> {

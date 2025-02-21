@@ -2,13 +2,11 @@ package com.haneolenae.bobi.domain.tag.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import com.haneolenae.bobi.domain.custom.entity.TemplateTag;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateTag;
 import com.haneolenae.bobi.domain.customer.entity.CustomerTag;
 import com.haneolenae.bobi.domain.member.entity.Member;
 import com.haneolenae.bobi.domain.tag.dto.request.TagRequest;
-import com.haneolenae.bobi.domain.tag.dto.request.TagUpdateRequest;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

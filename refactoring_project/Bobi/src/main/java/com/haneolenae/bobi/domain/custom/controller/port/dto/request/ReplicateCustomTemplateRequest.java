@@ -1,4 +1,4 @@
-package com.haneolenae.bobi.domain.custom.dto.request;
+package com.haneolenae.bobi.domain.custom.controller.port.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

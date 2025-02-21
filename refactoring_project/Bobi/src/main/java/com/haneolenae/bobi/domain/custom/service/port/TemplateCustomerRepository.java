@@ -1,4 +1,4 @@
-package com.haneolenae.bobi.domain.custom.repository;
+package com.haneolenae.bobi.domain.custom.service.port;
 
 import java.util.List;
 import java.util.Set;
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.haneolenae.bobi.domain.custom.entity.TemplateCustomer;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateCustomer;
 
 public interface TemplateCustomerRepository extends CrudRepository<TemplateCustomer, Long> {
 	List<TemplateCustomer> findByCustomerIdIn(List<Long> customerIds);

@@ -20,8 +20,8 @@ import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 
-import com.haneolenae.bobi.domain.custom.entity.CustomTemplate;
-import com.haneolenae.bobi.domain.custom.repository.CustomTemplateRepository;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplate;
+import com.haneolenae.bobi.domain.custom.service.port.CustomTemplateRepository;
 import com.haneolenae.bobi.domain.customer.entity.Customer;
 import com.haneolenae.bobi.domain.customer.repository.CustomerRepository;
 import com.haneolenae.bobi.domain.customer.repository.CustomerTagRepository;

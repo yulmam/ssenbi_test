@@ -2,6 +2,7 @@ package com.haneolenae.bobi.domain.custom.controller;
 
 import java.util.List;
 
+import com.haneolenae.bobi.domain.auth.util.TokenProvider;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.haneolenae.bobi.domain.auth.util.JwtTokenProvider;
-import com.haneolenae.bobi.domain.custom.dto.request.AddCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.dto.request.AddCustomerToTemplateRequest;
-import com.haneolenae.bobi.domain.custom.dto.request.AddTagToTemplateRequest;
-import com.haneolenae.bobi.domain.custom.dto.request.EditCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.dto.request.ReplicateCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.dto.response.CustomTemplateResponse;
-import com.haneolenae.bobi.domain.custom.service.CustomTemplateService;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddCustomerToTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddTagToTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.EditCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.ReplicateCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.response.CustomTemplateResponse;
+import com.haneolenae.bobi.domain.custom.controller.port.CustomTemplateService;
 import com.haneolenae.bobi.global.dto.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -32,11 +32,11 @@ import jakarta.validation.Valid;
 @RequestMapping("/customTemplate")
 public class CustomTemplateController {
 
-	private final JwtTokenProvider jwtTokenProvider;
+	private final TokenProvider tokenProvider;
 	private final CustomTemplateService customTemplateService;
 
-	public CustomTemplateController(JwtTokenProvider jwtTokenProvider, CustomTemplateService customTemplateService) {
-		this.jwtTokenProvider = jwtTokenProvider;
+	public CustomTemplateController(TokenProvider tokenProvider, CustomTemplateService customTemplateService) {
+		this.tokenProvider = tokenProvider;
 		this.customTemplateService = customTemplateService;
 	}
 
@@ -48,7 +48,7 @@ public class CustomTemplateController {
 		@RequestParam(required = false) List<Long> templateCustomers,
 		@RequestParam(required = false) String keyword
 	) {
-		long memberId = jwtTokenProvider.getIdFromToken(token);
+		long memberId = tokenProvider.getIdFromToken(token);
 
 		return ResponseEntity.ok(new ApiResponse<>(
 			customTemplateService.getCustomTemplates(memberId, pageable, templateTags, templateCustomers,
@@ -59,7 +59,7 @@ public class CustomTemplateController {
 	public ResponseEntity<ApiResponse<CustomTemplateResponse>> getCustomTemplate(
 		@RequestHeader("Authorization") String token,
 		@PathVariable("templateId") long templateId) {
-		long memberId = jwtTokenProvider.getIdFromToken(token);
+		long memberId = tokenProvider.getIdFromToken(token);
 
 		return ResponseEntity.ok(new ApiResponse<>(customTemplateService.getCustomTemplate(memberId, templateId)));
 	}
@@ -67,7 +67,7 @@ public class CustomTemplateController {
 	@PostMapping
 	public ResponseEntity<ApiResponse<String>> addCustomTemplate(@RequestHeader("Authorization") String token,
 		@Valid @RequestBody AddCustomTemplateRequest request) {
-		long memberId = jwtTokenProvider.getIdFromToken(token);
+		long memberId = tokenProvider.getIdFromToken(token);
 
 		customTemplateService.addCustomTemplate(memberId, request);
 
@@ -79,7 +79,7 @@ public class CustomTemplateController {
 		@RequestHeader("Authorization") String token,
 		@PathVariable("templateId") long templateId,
 		@Valid @RequestBody EditCustomTemplateRequest request) {
-		long memberId = jwtTokenProvider.getIdFromToken(token);
+		long memberId = tokenProvider.getIdFromToken(token);
 		customTemplateService.editCustomTemplate(memberId, templateId, request);
 		return new ResponseEntity<>(ApiResponse.ok(), HttpStatus.OK);
 	}
@@ -87,7 +87,7 @@ public class CustomTemplateController {
 	@DeleteMapping("/{templateId}")
 	public ResponseEntity<ApiResponse<String>> deleteCustomTemplate(@RequestHeader("Authorization") String token,
 		@PathVariable("templateId") long templateId) {
-		long memberId = jwtTokenProvider.getIdFromToken(token);
+		long memberId = tokenProvider.getIdFromToken(token);
 
 		customTemplateService.deleteCustomTemplate(memberId, templateId);
 
@@ -98,7 +98,7 @@ public class CustomTemplateController {
 	public ResponseEntity<ApiResponse<String>> addTagToCustomTemplate(@RequestHeader("Authorization") String token,
 		@PathVariable("templateId") long templateId,
 		@RequestBody AddTagToTemplateRequest request) {
-		long memberId = jwtTokenProvider.getIdFromToken(token);
+		long memberId = tokenProvider.getIdFromToken(token);
 		customTemplateService.addTagToTemplate(memberId, templateId, request);
 
 		return new ResponseEntity<>(ApiResponse.ok(), HttpStatus.OK);
@@ -108,7 +108,7 @@ public class CustomTemplateController {
 	public ResponseEntity<ApiResponse<String>> deleteTagFromCustomTemplate(@RequestHeader("Authorization") String token,
 		@PathVariable("templateId") long templateId,
 		@PathVariable("tagId") long tagId) {
-		long memberId = jwtTokenProvider.getIdFromToken(token);
+		long memberId = tokenProvider.getIdFromToken(token);
 
 		customTemplateService.removeTagFromTemplate(memberId, templateId, tagId);
 		return new ResponseEntity<>(ApiResponse.ok(), HttpStatus.OK);
@@ -118,7 +118,7 @@ public class CustomTemplateController {
 	public ResponseEntity<ApiResponse<String>> addCustomerToCustomTemplate(@RequestHeader("Authorization") String token,
 		@PathVariable("templateId") long templateId,
 		@RequestBody AddCustomerToTemplateRequest request) {
-		long memberId = jwtTokenProvider.getIdFromToken(token);
+		long memberId = tokenProvider.getIdFromToken(token);
 		customTemplateService.addCustomerToTemplate(memberId, templateId, request);
 
 		return new ResponseEntity<>(ApiResponse.ok(), HttpStatus.OK);
@@ -129,7 +129,7 @@ public class CustomTemplateController {
 		@RequestHeader("Authorization") String token,
 		@PathVariable("templateId") long templateId,
 		@PathVariable("customerId") long tagId) {
-		long memberId = jwtTokenProvider.getIdFromToken(token);
+		long memberId = tokenProvider.getIdFromToken(token);
 		customTemplateService.removeCustomerFromTemplate(memberId, templateId, tagId);
 
 		return new ResponseEntity<>(ApiResponse.ok(), HttpStatus.OK);
@@ -141,7 +141,7 @@ public class CustomTemplateController {
 		@PathVariable long templateId,
 		@RequestBody ReplicateCustomTemplateRequest request) {
 
-		long memberId = jwtTokenProvider.getIdFromToken(token);
+		long memberId = tokenProvider.getIdFromToken(token);
 		customTemplateService.replicateCustomTemplate(memberId, templateId, request);
 
 		return new ResponseEntity<>(ApiResponse.ok(), HttpStatus.OK);

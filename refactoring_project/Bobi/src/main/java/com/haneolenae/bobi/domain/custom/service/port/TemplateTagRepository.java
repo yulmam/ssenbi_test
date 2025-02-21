@@ -1,4 +1,4 @@
-package com.haneolenae.bobi.domain.custom.repository;
+package com.haneolenae.bobi.domain.custom.service.port;
 
 import java.util.List;
 import java.util.Set;
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import com.haneolenae.bobi.domain.custom.entity.TemplateTag;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateTag;
 
 public interface TemplateTagRepository extends JpaRepository<TemplateTag, Long> {
 	List<TemplateTag> findByTagIdIn(List<Long> tagIds);

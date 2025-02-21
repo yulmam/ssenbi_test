@@ -1,4 +1,4 @@
-package com.haneolenae.bobi.domain.custom.entity;
+package com.haneolenae.bobi.domain.custom.infrastructure.entity;
 
 import com.haneolenae.bobi.domain.tag.entity.Tag;
 

@@ -6,13 +6,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
-import com.haneolenae.bobi.domain.custom.dto.request.AddCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.dto.response.CustomCustomerResponse;
-import com.haneolenae.bobi.domain.custom.dto.response.CustomTagResponse;
-import com.haneolenae.bobi.domain.custom.dto.response.CustomTemplateResponse;
-import com.haneolenae.bobi.domain.custom.entity.CustomTemplate;
-import com.haneolenae.bobi.domain.custom.entity.TemplateCustomer;
-import com.haneolenae.bobi.domain.custom.entity.TemplateTag;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.response.CustomCustomerResponse;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.response.CustomTagResponse;
+import com.haneolenae.bobi.domain.custom.controller.port.dto.response.CustomTemplateResponse;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplate;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateCustomer;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateTag;
 import com.haneolenae.bobi.domain.general.entity.GeneralTemplate;
 import com.haneolenae.bobi.domain.member.entity.Member;
 

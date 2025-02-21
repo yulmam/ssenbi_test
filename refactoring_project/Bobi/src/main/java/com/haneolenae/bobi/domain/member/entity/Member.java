@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.haneolenae.bobi.domain.custom.entity.CustomTemplate;
+import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplate;
 import com.haneolenae.bobi.domain.customer.entity.Customer;
 import com.haneolenae.bobi.domain.member.dto.request.MemberUpdateRequest;
 import com.haneolenae.bobi.domain.message.entity.Message;
