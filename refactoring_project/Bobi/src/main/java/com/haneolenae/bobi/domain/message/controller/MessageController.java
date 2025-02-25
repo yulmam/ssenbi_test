@@ -19,7 +19,7 @@ import com.haneolenae.bobi.domain.auth.util.JwtTokenProvider;
 import com.haneolenae.bobi.domain.message.dto.request.SendMessageRequest;
 import com.haneolenae.bobi.domain.message.dto.response.MessageDetailResponse;
 import com.haneolenae.bobi.domain.message.dto.response.MessageResponse;
-import com.haneolenae.bobi.domain.message.service.MessageService;
+import com.haneolenae.bobi.domain.message.controller.port.MessageService;
 import com.haneolenae.bobi.global.dto.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -86,15 +86,6 @@ public class MessageController {
 		return new ResponseEntity<>(ApiResponse.ok(), HttpStatus.OK);
 	}
 
-	@GetMapping("/sendtest")
-	public ResponseEntity<ApiResponse<String>> sendTestMessage(
-		@RequestParam("receiverPhone") String receiverPhone,
-		@RequestParam("msg") String msg
-	) {
-		messageService.sendCoolSms(receiverPhone, msg);
-
-		return new ResponseEntity<>(ApiResponse.ok(), HttpStatus.OK);
-	}
 
 	@GetMapping("/statistics")
 	public ResponseEntity<?> getMessageTagStatistics(@RequestHeader("Authorization") String token) {

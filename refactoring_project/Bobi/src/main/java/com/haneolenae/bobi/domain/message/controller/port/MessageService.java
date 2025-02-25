@@ -1,4 +1,4 @@
-package com.haneolenae.bobi.domain.message.service;
+package com.haneolenae.bobi.domain.message.controller.port;
 
 import java.util.List;
 
@@ -18,8 +18,6 @@ public interface MessageService {
 	MessageDetailResponse getMessageDetail(long memberId, long messageId);
 
 	void deleteMessage(long memberId, long messageId);
-
-	void sendCoolSms(String receiverPhone, String msg);
 
 	List<TagStatisticsResponse> getMessageTagStatistics(long memberId);
 }

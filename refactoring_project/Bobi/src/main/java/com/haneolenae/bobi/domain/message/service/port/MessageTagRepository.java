@@ -1,4 +1,4 @@
-package com.haneolenae.bobi.domain.message.repository;
+package com.haneolenae.bobi.domain.message.service.port;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

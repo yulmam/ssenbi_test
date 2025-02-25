@@ -11,6 +11,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import com.haneolenae.bobi.domain.message.controller.port.MessageService;
+import com.haneolenae.bobi.domain.message.service.port.MessageSender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,9 +36,9 @@ import com.haneolenae.bobi.domain.message.entity.Message;
 import com.haneolenae.bobi.domain.message.entity.MessageCustomer;
 import com.haneolenae.bobi.domain.message.entity.MessageTag;
 import com.haneolenae.bobi.domain.message.mapper.MessageMapper;
-import com.haneolenae.bobi.domain.message.repository.MessageCustomerRepository;
-import com.haneolenae.bobi.domain.message.repository.MessageRepository;
-import com.haneolenae.bobi.domain.message.repository.MessageTagRepository;
+import com.haneolenae.bobi.domain.message.service.port.MessageCustomerRepository;
+import com.haneolenae.bobi.domain.message.service.port.MessageRepository;
+import com.haneolenae.bobi.domain.message.service.port.MessageTagRepository;
 import com.haneolenae.bobi.domain.tag.dto.response.TagStatisticsResponse;
 import com.haneolenae.bobi.domain.tag.entity.Tag;
 import com.haneolenae.bobi.domain.tag.repository.TagRepository;
@@ -62,9 +64,7 @@ public class MessageServiceImpl implements MessageService {
 	private final MessageCustomerRepository messageCustomerRepository;
 	private final MessageTagRepository messageTagRepository;
 	private final MessageMapper messageMapper;
-	private final DefaultMessageService coolSmsService;
-	@Value("${coolsms.senderPhoneNumber}")
-	private String senderPhoneNumber;
+	private final MessageSender messageSender;
 
 	@Transactional
 	public void sendMessage(long memberId, SendMessageRequest sendMessageRequest) {
@@ -155,7 +155,8 @@ public class MessageServiceImpl implements MessageService {
 			log.info("고객에게 메시지 전송 : " + customer.getId());
 			String msg = generateMessageForCustomer(originMessage.getContent(), sender, customer);
 			try {
-				sendCoolSms(customer.getPhoneNumber(), msg);
+				messageSender.sendMessage(customer.getPhoneNumber(), msg);
+				// 실행 시간 계산 (나노초 단위)
 				synchronized (successCustomers) {
 					successCustomers.add(MessageCustomer.builder()
 							.name(customer.getName())
@@ -221,23 +222,6 @@ public class MessageServiceImpl implements MessageService {
 
 		messageRepository.delete(message);
 		member.decreaseMessageCount();
-	}
-
-	@Override
-	public void sendCoolSms(String receiverPhone, String msg) {
-		net.nurigo.sdk.message.model.Message coolMessage = new net.nurigo.sdk.message.model.Message();
-		// 발신번호 및 수신번호는 반드시 01012345678 형태로 입력되어야 합니다.
-		coolMessage.setFrom(senderPhoneNumber);
-		coolMessage.setTo(receiverPhone);
-		coolMessage.setText(msg);
-
-		SingleMessageSentResponse response = coolSmsService.sendOne(new SingleMessageSendingRequest(coolMessage));
-		log.info(response.toString());
-		log.info(response.getStatusCode());
-		if (!response.getStatusCode().equals("2000")) {
-			log.info("third party message api fail");
-			throw new ApiException(ApiType.EXTERNAL_MESSAGE_SERVICE_ERROR);
-		}
 	}
 
 	@Transactional

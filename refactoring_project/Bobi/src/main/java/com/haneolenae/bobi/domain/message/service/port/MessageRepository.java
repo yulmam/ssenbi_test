@@ -1,4 +1,4 @@
-package com.haneolenae.bobi.domain.message.repository;
+package com.haneolenae.bobi.domain.message.service.port;
 
 import java.util.List;
 import java.util.Optional;
