@@ -110,7 +110,7 @@ public class MessageServiceImpl implements MessageService {
 		// 실패한 고객 이름 리스트
 		List<String> failedCustomers = new ArrayList<>();
 
-		Executor executor = Executors.newFixedThreadPool(10);
+		Executor executor = Executors.newFixedThreadPool(16);
 
 		List<CompletableFuture<Void>> futures = finalReceiverCustomers.stream()
 				.map(customer -> sendMessageAsync(originMessage, sender, customer, successCustomers, failedCustomers, executor))

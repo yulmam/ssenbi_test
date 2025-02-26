@@ -4,6 +4,7 @@ import com.haneolenae.bobi.domain.message.service.port.MessageSender;
 import com.haneolenae.bobi.global.dto.ApiType;
 import com.haneolenae.bobi.global.exception.ApiException;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
@@ -11,10 +12,8 @@ import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MessageSenderImpl implements MessageSender {
     @Value("${coolsms.senderPhoneNumber}")
     private String senderPhoneNumber;
@@ -33,10 +32,5 @@ public class MessageSenderImpl implements MessageSender {
         if (!response.getStatusCode().equals("2000")) {
             throw new ApiException(ApiType.EXTERNAL_MESSAGE_SERVICE_ERROR);
         }
-    }
-
-    @Override
-    public void sendMessages(List<String> receiverPhones, String messageContent) {
-
     }
 }
