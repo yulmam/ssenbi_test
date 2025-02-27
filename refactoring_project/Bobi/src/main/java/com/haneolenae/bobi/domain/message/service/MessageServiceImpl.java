@@ -78,28 +78,17 @@ public class MessageServiceImpl implements MessageService {
 			.member(sender)
 			.build();
 
-		//TODO : 받는이 유효성 검사
+		// 받는이 유효성 검사
 		Set<Customer> finalReceiverCustomers = customerRepository.findByMemberIdAndCustomerIdIn(memberId,
 			sendMessageRequest.getMessageCustomerIds());
 
-		if (finalReceiverCustomers.size() != sendMessageRequest.getMessageCustomerIds().size()) {
-			throw new ApiException(ApiType.CUSTOMER_NOT_FOUND);
-		}
 
-		//TODO: 태그 유효성 검사
-		List<Tag> tags = tagRepository.findByMemberIdAndTagIds(memberId, sendMessageRequest.getMessageTagIds());
-
-		if (tags.size() != sendMessageRequest.getMessageTagIds().size()) {
-			throw new ApiException(ApiType.TAG_MEMBER_INVALID);
-		}
-
-		// TODO: 태그에 해당하는 Customer 가져오기
+		// 태그에 해당하는 Customer 가져오기
 		List<Customer> tagCustomers = customerRepository.findALlByMemberIdAndTags(memberId,
 			sendMessageRequest.getMessageTagIds());
 
 		finalReceiverCustomers.addAll(tagCustomers);
 
-		// TODO: customer에 메시지 전송
 
 		if (finalReceiverCustomers.isEmpty()) {
 			throw new ApiException(ApiType.TARGET_NOT_FOUND);
@@ -110,10 +99,10 @@ public class MessageServiceImpl implements MessageService {
 		// 실패한 고객 이름 리스트
 		List<String> failedCustomers = new ArrayList<>();
 
-		Executor executor = Executors.newFixedThreadPool(16);
+
 
 		List<CompletableFuture<Void>> futures = finalReceiverCustomers.stream()
-				.map(customer -> sendMessageAsync(originMessage, sender, customer, successCustomers, failedCustomers, executor))
+				.map(customer -> sendMessagesAsync(originMessage, sender, customer, successCustomers, failedCustomers, executor))
 				.collect(Collectors.toList());
 
 		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
@@ -135,6 +124,9 @@ public class MessageServiceImpl implements MessageService {
 			}
 		}
 
+		// 태그 가져오기
+		List<Tag> tags = tagRepository.findByMemberIdAndTagIds(memberId, sendMessageRequest.getMessageTagIds());
+
 		//TODO: messageTag 생성 및 저장
 		List<MessageTag> messageTags = tags.stream()
 			.map(tag -> new MessageTag(tag.getName(), tag.getColor(), originMessage))
@@ -148,21 +140,21 @@ public class MessageServiceImpl implements MessageService {
 			throw new ApiException(ApiType.EXTERNAL_MESSAGE_SERVICE_ERROR, failedCustomers);
 		}
 	}
-	private CompletableFuture<Void> sendMessageAsync(Message originMessage, Member sender, Customer customer,
-													 List<MessageCustomer> successCustomers, List<String> failedCustomers,
-													 Executor executor) {
+	private CompletableFuture<Void> sendMessagesAsync(Message message, Member sender, Customer customer,
+													 List<MessageCustomer> successCustomers, List<String> failedCustomers) {
+		Executor executor = Executors.newFixedThreadPool(16);
+		
 		return CompletableFuture.runAsync(() -> {
 			log.info("고객에게 메시지 전송 : " + customer.getId());
-			String msg = generateMessageForCustomer(originMessage.getContent(), sender, customer);
+			String msg = message.makePersonalMessage(customer.getName(), sender.getBusiness());
 			try {
 				messageSender.sendMessage(customer.getPhoneNumber(), msg);
-				// 실행 시간 계산 (나노초 단위)
 				synchronized (successCustomers) {
 					successCustomers.add(MessageCustomer.builder()
 							.name(customer.getName())
 							.phoneNumber(customer.getPhoneNumber())
 							.color(customer.getColor())
-							.message(originMessage)
+							.message(message)
 							.build());
 				}
 			} catch (ApiException e) {
@@ -181,6 +173,7 @@ public class MessageServiceImpl implements MessageService {
 
 		return message;
 	}
+
 
 	@Override
 	public List<MessageResponse> getMessageList(long memberId, String keyword, Pageable pageable) {

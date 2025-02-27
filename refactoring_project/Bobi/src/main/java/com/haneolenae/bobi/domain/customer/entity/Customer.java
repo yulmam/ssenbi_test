@@ -114,4 +114,5 @@ public class Customer {
 		return customerTags.stream().map(CustomerTag::getTag)
 			.collect(Collectors.toList());
 	}
+
 }

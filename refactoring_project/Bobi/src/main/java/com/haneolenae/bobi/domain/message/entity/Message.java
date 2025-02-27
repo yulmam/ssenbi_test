@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -20,12 +21,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
+@Setter
 @Entity
 @Builder
 @NoArgsConstructor
@@ -60,4 +58,11 @@ public class Message {
 	@UpdateTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
 	private LocalDateTime updatedAt;
+
+
+
+	public String makePersonalMessage(String customerName, String businessName){
+		return content.replace("[[고객명]]", customerName)
+				.replace("[[회사명]]", businessName);
+	}
 }
