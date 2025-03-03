@@ -1,17 +1,13 @@
 package com.haneolenae.bobi.domain.message.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import com.haneolenae.bobi.domain.message.controller.port.MessageService;
+import com.haneolenae.bobi.domain.message.entity.vo.MessageSendingResult;
 import com.haneolenae.bobi.domain.message.service.port.MessageSender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -66,6 +62,7 @@ public class MessageServiceImpl implements MessageService {
 	private final MessageMapper messageMapper;
 	private final MessageSender messageSender;
 
+	//문자 메시지를 받을 고객 목록을 정리한 뒤 단체 메시지를 전송하는 API 입니다.
 	@Transactional
 	public void sendMessage(long memberId, SendMessageRequest sendMessageRequest) {
 
@@ -78,7 +75,7 @@ public class MessageServiceImpl implements MessageService {
 			.member(sender)
 			.build();
 
-		// 받는이 유효성 검사
+		// 고객 아이디에 해당하는 Customer 가져오기
 		Set<Customer> finalReceiverCustomers = customerRepository.findByMemberIdAndCustomerIdIn(memberId,
 			sendMessageRequest.getMessageCustomerIds());
 
@@ -87,6 +84,7 @@ public class MessageServiceImpl implements MessageService {
 		List<Customer> tagCustomers = customerRepository.findALlByMemberIdAndTags(memberId,
 			sendMessageRequest.getMessageTagIds());
 
+		//최종 문자 메시지 받을 Customer
 		finalReceiverCustomers.addAll(tagCustomers);
 
 
@@ -94,85 +92,72 @@ public class MessageServiceImpl implements MessageService {
 			throw new ApiException(ApiType.TARGET_NOT_FOUND);
 		}
 
-		// 성공한 고객 리스트
-		List<MessageCustomer> successCustomers = new ArrayList<>();
-		// 실패한 고객 이름 리스트
-		List<String> failedCustomers = new ArrayList<>();
 
+		List<MessageSendingResult> messageSendingResults = sendMessages(originMessage, sender, finalReceiverCustomers);
 
-
-		List<CompletableFuture<Void>> futures = finalReceiverCustomers.stream()
-				.map(customer -> sendMessagesAsync(originMessage, sender, customer, successCustomers, failedCustomers, executor))
+		//성공한 고객들 연관관계 설정
+		List<MessageCustomer> messageCustomers =  messageSendingResults.stream()
+				.filter(MessageSendingResult::isSuccess)  // ✅ 성공한 메시지만 필터링
+				.map(result -> MessageCustomer.from(result, originMessage))
 				.collect(Collectors.toList());
 
-		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-		if (failedCustomers.size() == finalReceiverCustomers.size()) {
-			throw new ApiException(ApiType.MESSAGE_SERVICE_ALL_FAIL);
-		}
-
-		//TODO: message 저장
-		messageRepository.saveAndFlush(originMessage);
-
-		sender.increaseMessageCount();
-
-		if (sendMessageRequest.getCustomTemplateId() != null) {
-			CustomTemplate customTemplate = customTemplateRepository.findById(sendMessageRequest.getCustomTemplateId())
-				.orElse(null);
-			if (customTemplate != null) {
-				customTemplate.countUp();
-			}
-		}
+		originMessage.setMessageCustomers(messageCustomers);
 
 		// 태그 가져오기
 		List<Tag> tags = tagRepository.findByMemberIdAndTagIds(memberId, sendMessageRequest.getMessageTagIds());
 
 		//TODO: messageTag 생성 및 저장
 		List<MessageTag> messageTags = tags.stream()
-			.map(tag -> new MessageTag(tag.getName(), tag.getColor(), originMessage))
-			.toList();
-		messageTagRepository.saveAllAndFlush(messageTags);
+				.map(tag -> new MessageTag(tag.getName(), tag.getColor(), originMessage))
+				.toList();
 
-		//TODO: messageCustomer 생성 및 저장
-		messageCustomerRepository.saveAllAndFlush(successCustomers);
+		originMessage.setMessageTags(messageTags);
 
-		if (!failedCustomers.isEmpty()) {
-			throw new ApiException(ApiType.EXTERNAL_MESSAGE_SERVICE_ERROR, failedCustomers);
+		messageRepository.save(originMessage);
+
+		//전송자 메시지 전송 횟수 중가
+		sender.increaseMessageCount();
+		memberRepository.save(sender);
+
+		if (sendMessageRequest.getCustomTemplateId() != null) {
+			Optional<CustomTemplate> optionalCustomTemplate = customTemplateRepository.findById(sendMessageRequest.getCustomTemplateId());
+			if (optionalCustomTemplate.isPresent()) {
+				CustomTemplate customTemplate = optionalCustomTemplate.get();
+				customTemplate.countUp();
+				customTemplateRepository.save(customTemplate);
+			}
 		}
 	}
-	private CompletableFuture<Void> sendMessagesAsync(Message message, Member sender, Customer customer,
-													 List<MessageCustomer> successCustomers, List<String> failedCustomers) {
-		Executor executor = Executors.newFixedThreadPool(16);
-		
-		return CompletableFuture.runAsync(() -> {
-			log.info("고객에게 메시지 전송 : " + customer.getId());
-			String msg = message.makePersonalMessage(customer.getName(), sender.getBusiness());
-			try {
-				messageSender.sendMessage(customer.getPhoneNumber(), msg);
-				synchronized (successCustomers) {
-					successCustomers.add(MessageCustomer.builder()
-							.name(customer.getName())
-							.phoneNumber(customer.getPhoneNumber())
-							.color(customer.getColor())
-							.message(message)
-							.build());
-				}
-			} catch (ApiException e) {
-				synchronized (failedCustomers) {
-					failedCustomers.add(customer.getName());
-				}
-			}
-		}, executor);
+	private List<MessageSendingResult> sendMessages(Message message, Member sender, Set<Customer> customers) {
+		List<CompletableFuture<MessageSendingResult>> futures = new ArrayList<>();
+
+		for (Customer customer : customers) {
+			log.info("고객에게 메시지 전송 : {}", customer.getId());
+
+			// 개인화된 메시지 생성
+			String personalizedMessage = message.makePersonalMessage(customer.getName(), sender.getBusiness());
+
+			// 비동기 메시지 전송 및 CompletableFuture 리스트에 추가
+			CompletableFuture<MessageSendingResult> future = messageSender
+					.sendMessagesAsync(personalizedMessage, sender.getPersonalPhoneNumber(), customer.toCustomerInfo());
+
+			futures.add(future);
+		}
+
+		// 모든 비동기 작업이 완료될 때까지 대기
+		CompletableFuture<Void> allDoneFuture = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+
+		// 모든 작업 완료 후 결과 리스트 반환
+		return allDoneFuture.thenApply(v ->
+				futures.stream()
+						.map(CompletableFuture::join) // 모든 작업 완료 후 join 실행
+						.collect(Collectors.toList())
+		).exceptionally(e -> {
+			log.error("비동기 작업 중 오류 발생: {}", e.getMessage());
+			return Collections.emptyList(); // 실패 시 빈 리스트 반환
+		}).join();
 	}
 
-
-
-	public String generateMessageForCustomer(String content, Member sender, Customer customer) {
-		String message = content.replace(BUSINESS_NAME_PLACEHOLDER, sender.getBusiness());
-		message = message.replace(CUSTOMER_NAME_PLACEHOLDER, customer.getName());
-
-		return message;
-	}
 
 
 	@Override

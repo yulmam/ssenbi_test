@@ -1,9 +1,14 @@
 package com.haneolenae.bobi.domain.message.infrastructure;
 
 
+import com.haneolenae.bobi.domain.message.entity.vo.CustomerInfo;
+import com.haneolenae.bobi.domain.message.entity.vo.MessageSendingResult;
 import com.haneolenae.bobi.domain.message.service.port.MessageSender;
 import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.CompletableFuture;
 
 @Primary
 @Component
@@ -16,4 +21,15 @@ public class FakeMessageSenderImpl implements MessageSender {
             e.printStackTrace();
         }
     }
+
+    @Async("testExecutor")
+    public CompletableFuture<MessageSendingResult> sendMessagesAsync(String messageContent, String senderPhone, CustomerInfo customerInfo) {
+        try {
+            Thread.sleep(1000); // 1초 지연 (비동기 시뮬레이션)
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return CompletableFuture.completedFuture(MessageSendingResult.success(customerInfo));
+    }
+
 }

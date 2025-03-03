@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.haneolenae.bobi.domain.message.entity.vo.CustomerInfo;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -115,4 +116,11 @@ public class Customer {
 			.collect(Collectors.toList());
 	}
 
+	public CustomerInfo toCustomerInfo(){
+		return CustomerInfo.builder()
+				.name(name)
+				.phoneNumber(phoneNumber)
+				.color(color)
+				.build();
+	}
 }

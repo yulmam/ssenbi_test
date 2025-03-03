@@ -2,6 +2,8 @@ package com.haneolenae.bobi.domain.message.entity;
 
 import java.time.LocalDateTime;
 
+import com.haneolenae.bobi.domain.message.entity.vo.CustomerInfo;
+import com.haneolenae.bobi.domain.message.entity.vo.MessageSendingResult;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -49,4 +51,23 @@ public class MessageCustomer {
 	@UpdateTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
 	private LocalDateTime updatedAt;
+
+	public static MessageCustomer from(CustomerInfo customerInfo, Message message){
+		return MessageCustomer.builder()
+				.name(customerInfo.getName())
+				.phoneNumber(customerInfo.getPhoneNumber())
+				.color(customerInfo.getColor())
+				.message(message)
+				.build();
+	}
+
+	public static MessageCustomer from(MessageSendingResult result, Message message) {
+		CustomerInfo customerInfo = result.getCustomerInfo();
+		return MessageCustomer.builder()
+				.name(customerInfo.getName())
+				.phoneNumber(customerInfo.getPhoneNumber())
+				.color(customerInfo.getColor())
+				.message(message)
+				.build();
+	}
 }
