@@ -3,10 +3,11 @@ package com.haneolenae.bobi.domain.custom.infrastructure.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.EditCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.EditCustomTemplateRequest;
 import com.haneolenae.bobi.domain.member.entity.Member;
 
 import jakarta.persistence.Column;
@@ -17,8 +18,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedAttributeNode;
-import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -28,13 +27,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NamedEntityGraph(
-	name = "CustomTemplate.withTagsAndCustomers",
-	attributeNodes = {
-		@NamedAttributeNode("templateTags"),
-		@NamedAttributeNode("templateCustomers")
-	}
-)
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -63,9 +55,11 @@ public class CustomTemplate {
 	private LocalDateTime updatedAt;
 
 	@OneToMany(mappedBy = "customTemplate", fetch = FetchType.LAZY)
+	@BatchSize(size = 100)
 	private List<TemplateCustomer> templateCustomers;
 
 	@OneToMany(mappedBy = "customTemplate", fetch = FetchType.LAZY)
+	@BatchSize(size = 100)
 	private List<TemplateTag> templateTags;
 
 	@ManyToOne(fetch = FetchType.LAZY)

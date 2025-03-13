@@ -16,6 +16,7 @@ public class FakeMessageSenderImpl implements MessageSender {
     @Override
     public void sendMessage(String receiverPhone, String messageContent) {
         try{
+            System.out.println("뭐하냐?");
             Thread.sleep(1000);
         }catch (InterruptedException e){
             e.printStackTrace();
@@ -26,6 +27,7 @@ public class FakeMessageSenderImpl implements MessageSender {
     public CompletableFuture<MessageSendingResult> sendMessagesAsync(String messageContent, String senderPhone, CustomerInfo customerInfo) {
         try {
             Thread.sleep(1000); // 1초 지연 (비동기 시뮬레이션)
+            System.out.println("뭐하냐?");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddCustomerToTemplateRequest;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddTagToTemplateRequest;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.EditCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.ReplicateCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.response.CustomTemplateResponse;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.AddCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.AddCustomerToTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.AddTagToTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.EditCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.ReplicateCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.response.CustomTemplateResponse;
 import com.haneolenae.bobi.domain.custom.controller.port.CustomTemplateService;
 import com.haneolenae.bobi.global.dto.ApiResponse;
 

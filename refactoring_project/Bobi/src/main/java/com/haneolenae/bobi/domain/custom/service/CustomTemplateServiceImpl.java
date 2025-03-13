@@ -3,6 +3,7 @@ package com.haneolenae.bobi.domain.custom.service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.haneolenae.bobi.domain.custom.controller.port.CustomTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +11,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddCustomerToTemplateRequest;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddTagToTemplateRequest;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.EditCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.ReplicateCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.response.CustomTemplateResponse;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.AddCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.AddCustomerToTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.AddTagToTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.EditCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.ReplicateCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.response.CustomTemplateResponse;
 import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplate;
 import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateCustomer;
 import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateTag;
@@ -63,6 +64,7 @@ public class CustomTemplateServiceImpl implements CustomTemplateService {
 		List<CustomTemplate> customTemplates = customTemplateRepository.findTemplates(pageable, templateTags,
 			templateCustomer, templateSearch, memberId).getContent();
 
+		System.out.println("test");
 		return customTemplates.stream().map(customTemplateMapper::toCustomTemplateResponse)
 			.toList();
 	}
@@ -95,25 +97,34 @@ public class CustomTemplateServiceImpl implements CustomTemplateService {
 		if (!tagIds.isEmpty()) {
 			List<Tag> tags = tagRepository.findByMemberIdAndIdIn(memberId, tagIds);
 
-			if (tags.size() != tagIds.size())
+			if (tags.size() != tagIds.size()) {
 				throw new ApiException(ApiType.TAG_NOT_FOUND);
+			}
 
-			tags.forEach(tag -> templateTagRepository.save(
-				new TemplateTag(customTemplate, tag)
-			));
+			// 🔥 saveAll()을 사용하여 Batch Insert 최적화
+			List<TemplateTag> templateTags = tags.stream()
+					.map(tag -> new TemplateTag(customTemplate, tag))
+					.collect(Collectors.toList());
+
+			templateTagRepository.saveAll(templateTags);
 		}
 	}
+
 
 	public void addCustomers(long memberId, List<Long> customerIds, CustomTemplate customTemplate) {
 		if (!customerIds.isEmpty()) {
 			List<Customer> customers = customerRepository.findByMemberIdAndIdIn(memberId, customerIds);
 
-			if (customers.size() != customerIds.size())
+			if (customers.size() != customerIds.size()) {
 				throw new ApiException(ApiType.CUSTOMER_NOT_FOUND);
+			}
 
-			customers.forEach(customer -> templateCustomerRepository.save(
-				new TemplateCustomer(customTemplate, customer)
-			));
+			// 🔥 saveAll()을 사용하여 Batch Insert 최적화
+			List<TemplateCustomer> templateCustomers = customers.stream()
+					.map(customer -> new TemplateCustomer(customTemplate, customer))
+					.collect(Collectors.toList());
+
+			templateCustomerRepository.saveAll(templateCustomers);
 		}
 	}
 

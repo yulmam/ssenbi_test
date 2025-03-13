@@ -1,4 +1,4 @@
-package com.haneolenae.bobi.domain.custom.controller.port.dto.response;
+package com.haneolenae.bobi.domain.custom.controller.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.List;

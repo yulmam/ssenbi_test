@@ -6,10 +6,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
-import com.haneolenae.bobi.domain.custom.controller.port.dto.request.AddCustomTemplateRequest;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.response.CustomCustomerResponse;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.response.CustomTagResponse;
-import com.haneolenae.bobi.domain.custom.controller.port.dto.response.CustomTemplateResponse;
+import com.haneolenae.bobi.domain.custom.controller.dto.request.AddCustomTemplateRequest;
+import com.haneolenae.bobi.domain.custom.controller.dto.response.CustomCustomerResponse;
+import com.haneolenae.bobi.domain.custom.controller.dto.response.CustomTagResponse;
+import com.haneolenae.bobi.domain.custom.controller.dto.response.CustomTemplateResponse;
 import com.haneolenae.bobi.domain.custom.infrastructure.entity.CustomTemplate;
 import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateCustomer;
 import com.haneolenae.bobi.domain.custom.infrastructure.entity.TemplateTag;

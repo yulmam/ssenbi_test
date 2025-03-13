@@ -49,16 +49,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
-	private static final String BUSINESS_NAME_PLACEHOLDER = "[[업체명]]";
-	private static final String CUSTOMER_NAME_PLACEHOLDER = "[[고객명]]";
 	private final MemberRepository memberRepository;
 	private final CustomerRepository customerRepository;
 	private final CustomTemplateRepository customTemplateRepository;
-	private final CustomerTagRepository customerTagRepository;
 	private final TagRepository tagRepository;
 	private final MessageRepository messageRepository;
-	private final MessageCustomerRepository messageCustomerRepository;
-	private final MessageTagRepository messageTagRepository;
 	private final MessageMapper messageMapper;
 	private final MessageSender messageSender;
 
@@ -141,6 +136,7 @@ public class MessageServiceImpl implements MessageService {
 			CompletableFuture<MessageSendingResult> future = messageSender
 					.sendMessagesAsync(personalizedMessage, sender.getPersonalPhoneNumber(), customer.toCustomerInfo());
 
+			System.out.println("test");
 			futures.add(future);
 		}
 
@@ -156,6 +152,7 @@ public class MessageServiceImpl implements MessageService {
 			log.error("비동기 작업 중 오류 발생: {}", e.getMessage());
 			return Collections.emptyList(); // 실패 시 빈 리스트 반환
 		}).join();
+
 	}
 
 
