@@ -136,7 +136,6 @@ public class MessageServiceImpl implements MessageService {
 			CompletableFuture<MessageSendingResult> future = messageSender
 					.sendMessagesAsync(personalizedMessage, sender.getPersonalPhoneNumber(), customer.toCustomerInfo());
 
-			System.out.println("test");
 			futures.add(future);
 		}
 
