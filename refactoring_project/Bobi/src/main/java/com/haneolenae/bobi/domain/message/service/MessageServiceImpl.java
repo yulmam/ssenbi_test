@@ -148,7 +148,7 @@ public class MessageServiceImpl implements MessageService {
 						.map(CompletableFuture::join) // 모든 작업 완료 후 join 실행
 						.collect(Collectors.toList())
 		).exceptionally(e -> {
-			log.error("비동기 작업 중 오류 발생: {}", e.getMessage());
+			log.error("비동기 작업 중 오류 발생: ", e.getMessage());
 			return Collections.emptyList(); // 실패 시 빈 리스트 반환
 		}).join();
 
