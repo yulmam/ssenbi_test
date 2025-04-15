@@ -3,7 +3,7 @@
 
 ## 📌 프로젝트 목표
 1. **성능 최적화**: 캐싱 및 비동기 처리 적용
-2. **CI/CD 파이프라인 구축**: 배포 자동화 완료
+2. **무중단 배포포 구축**: 배포 자동화 완료
 3. **안정적인 서비스 제공**: 성능 테스트 및 지속적인 리팩토링
 
 
@@ -52,15 +52,15 @@
 
 ---
 
-## 2. CI/CD 구축
+## 2. 무중단 배포 구축
 센비 프로젝트의 자동 배포 및 운영 환경을 구축하기 위해 CI/CD를 적용하였습니다.  
 [노션에서 보기](https://www.notion.so/1-CMS-SSENBI-CICD-17e708433a6d80369823cec996496dee)
-### **📌 CI/CD 구축 과정**
+### **📌 무중단 배포 구축 과정**
 - **개념 정리**
-  - [CI/CD 개념](https://www.notion.so/17e708433a6d80c48b4dcb85c41a810e)
+  - [개념](https://www.notion.so/17e708433a6d80c48b4dcb85c41a810e)
 
 - **구현 과정**
-  - [CI/CD 구축 문서](https://www.notion.so/CI-CD-180708433a6d80d1bfdff4df240465d0)
+  - [구축 문서](https://www.notion.so/CI-CD-180708433a6d80d1bfdff4df240465d0)
   - [EC2 설정](https://www.notion.so/EC2-174708433a6d80cca58ac949aedffb4d)
   - [Docker 설정](https://www.notion.so/Docker-174708433a6d8034be5bf01e37eb1e55)
   - [nginx 설정](https://www.notion.so/nginx-175708433a6d8074aa0cc42537331200)
